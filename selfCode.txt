@@ -1,0 +1,95 @@
+import { v4 as uuidv4 } from 'uuid';
+
+
+let users = [];
+router.get('/',(req,res)=>{
+    res.send(users)
+}) //for getting all users
+
+
+router.post('/',(req, res)=>{
+    
+    console.log(`Post request reached the server`);
+    
+    const userData = req.body;
+    
+    const userWithId = userData.map((user)=>({
+        ...user,
+        id:uuidv4()
+    }))
+  
+    // const userWithId = {...user, id : uuidv4()}
+    console.log(userWithId)
+    users.push(...userWithId)    
+
+    res.send(users)
+}) //creating user
+
+
+router.get('/:id',(req, res)=>{
+    console.log(req.params); //req.paramas used to get the url specify part of the url
+    const {id} = req.params; 
+    const foundUser = users.find((user)=> user.id === id)
+
+    res.send(foundUser);
+})//getting url part 
+
+
+// router.delete('/:id',(req, res)=>{
+//     const {id} = req.params;
+    
+//     users = users.filter((user) => user.id !== id);
+
+//     res.send(users);
+// })//delete the entire account 
+
+
+// router.patch('/:id',(req, res)=>{
+//     const { id } = req.params;
+   
+//     const user = users.find((user) => user.id === id)
+//  if (!user) {
+//         return res.status(404).send(`User with id ${id} not found`);
+//     }
+
+//     const {name} = req.body
+
+//     if(name) user.name = name;
+   
+
+//     res.send(user);
+// })//used to udate the specify field of the data
+
+
+router.patch('/:id', (req, res) => {
+  const { id } = req.params;
+  const user = users.find(user => user.id === id);
+
+  if (!user) {
+    return res.status(404).send(`User with id ${id} not found`);
+  }
+
+  const { name, lastname, age } = req.body;
+
+  if (name !== undefined) user.name = name;
+  if (lastname !== undefined) user.lastname = lastname;
+  if (age !== undefined) user.age = age;
+
+  res.send(users);
+}); //patch update only specify field only
+
+
+router.put('/:id',(req, res)=>{
+    const { id } = req.params;
+
+    const userIndex = users.findIndex((user) => user.id === id);
+    const {name, lastname, age} = req.body;
+    users[userIndex] = {
+       id,
+       name,
+       lastname,
+       age
+    }
+
+    res.send(users[userIndex]);
+})
